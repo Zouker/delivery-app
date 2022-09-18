@@ -14,13 +14,14 @@ import {HeaderComponent} from '../../components/header/header.component';
 
 interface HomeScreenProps {
     navigation: any
+    state: number
 }
 
 export const HomeScreen = (props: HomeScreenProps) => {
 
     const goToDeliveryRoute = () => props.navigation.navigate('DeliveryRoute')
 
-    const state: number = 1;
+    const state: number = props.state || 1;
 
     return (
         <SafeAreaView style={homeStyle.flex}>
@@ -29,6 +30,7 @@ export const HomeScreen = (props: HomeScreenProps) => {
                 navigation={props.navigation}
             />
             <MapView style={homeStyle.flex}
+                     testID={'mapView'}
                      initialRegion={{
                          latitude: 53.904541,
                          longitude: 27.561523,

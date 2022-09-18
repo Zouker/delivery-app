@@ -5,7 +5,8 @@ import {searchingDeliveryStyle} from './searching-delivery.style';
 
 export const SearchingDeliveryComponent = () => {
     return (
-        <View style={searchingDeliveryStyle.flexCenterColumn}>
+        <View style={searchingDeliveryStyle.flexCenterColumn}
+        testID={'searchDeliveryCard'}>
             <ActivityIndicator color={searchingDeliveryStyle.icon.color}
                                animating={true}/>
             <Title style={searchingDeliveryStyle.title}>Searching...</Title>
