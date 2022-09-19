@@ -13,8 +13,8 @@ import {
 import {HeaderComponent} from '../../components/header/header.component';
 
 interface HomeScreenProps {
-    navigation: any
-    state: number
+    navigation?: any
+    state?: number
 }
 
 export const HomeScreen = (props: HomeScreenProps) => {
