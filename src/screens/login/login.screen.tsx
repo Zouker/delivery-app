@@ -4,14 +4,27 @@ import {Button, Card, Text, TextInput} from 'react-native-paper';
 import {loginStyle} from './login.style';
 import {Formik} from 'formik';
 import {loginForm} from './login.form';
+import {LoadingState} from '../../store/loading/LoadingState';
+import {connect} from 'react-redux';
+import {bindActionCreators} from '@reduxjs/toolkit';
+import {hide, show} from '../../store/loading/loading.actions';
 
 interface LoginScreenProps {
-    navigation: any
+    loadingState: LoadingState
+    navigation?: any
+    hideLoading: Function
+    showLoading: Function
 }
 
-export const LoginScreen = (props: LoginScreenProps) => {
+const LoginScreen = (props: LoginScreenProps) => {
     const login = () => props.navigation.navigate('Home')
     const register = () => props.navigation.navigate('Register')
+    const forgotEmailPassword = () => {
+        props.showLoading()
+        setTimeout(() => {
+            props.hideLoading()
+        }, 3000)
+    }
 
 
     return (
@@ -60,6 +73,7 @@ export const LoginScreen = (props: LoginScreenProps) => {
                                         }}>{errors.password}</Text>
                                         : null}
                                     <Button
+                                        onPress={forgotEmailPassword}
                                         uppercase={false}
                                         style={loginStyle.cardButton}
                                         testID={'recoveryButton'}
@@ -86,3 +100,15 @@ export const LoginScreen = (props: LoginScreenProps) => {
         </SafeAreaView>
     );
 };
+
+const mapStateToProps = (store: { loading: LoadingState }) => ({
+    loadingState: store.loading
+})
+const mapDispatchToProps = (dispatch: any) => (
+    bindActionCreators({
+        hideLoading: hide,
+        showLoading: show
+    }, dispatch)
+)
+
+export default connect(mapStateToProps, mapDispatchToProps)(LoginScreen);
