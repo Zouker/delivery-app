@@ -1,8 +1,10 @@
 import {LoginState} from './LoginState';
 import {createReducer} from '@reduxjs/toolkit';
 import {
+    login, loginFail, loginSuccess,
     recoverPassword,
-    recoverPasswordFail, recoverPasswordReset,
+    recoverPasswordFail,
+    recoverPasswordReset,
     recoverPasswordSuccess
 } from './login.actions';
 import {AppInitialState} from '../AppInitialState';
@@ -40,6 +42,29 @@ export const loginReducer = createReducer(initialState, builder => {
             error: null,
             isRecoveredPassword: false,
             isRecoveringPassword: false,
+        }
+    })
+    builder.addCase(login, currentState => {
+        return {
+            ...currentState,
+            error: null,
+            isLoggedIn: false,
+            isLoggingIn: true,
+        }
+    })
+    builder.addCase(loginSuccess, currentState => {
+        return {
+            ...currentState,
+            isLoggedIn: true,
+            isLoggingIn: false,
+        }
+    })
+    builder.addCase(loginFail, (currentState, action) => {
+        return {
+            ...currentState,
+            error: action.payload,
+            isLoggedIn: false,
+            isLoggingIn: false,
         }
     })
 })
