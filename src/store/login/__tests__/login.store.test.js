@@ -1,7 +1,7 @@
 import {loginReducer} from '../login.reducers';
 import {
     recoverPassword,
-    recoverPasswordFail,
+    recoverPasswordFail, recoverPasswordReset,
     recoverPasswordSuccess
 } from '../login.actions';
 import {AppInitialState} from '../../AppInitialState';
@@ -49,6 +49,20 @@ describe('Login store', () => {
             error,
             isRecoveredPassword: false,
             isRecoveringPassword: false,
+        })
+    })
+
+    it('recoverPasswordReset', () => {
+        const initialState = {
+            ...AppInitialState.login,
+            error: {error: 'message'},
+            isRecoveredPassword: true,
+            isRecoveringPassword: true,
+        }
+        const newState = loginReducer(initialState, recoverPasswordReset())
+
+        expect(newState).toEqual({
+            ...AppInitialState.login
         })
     })
 })
