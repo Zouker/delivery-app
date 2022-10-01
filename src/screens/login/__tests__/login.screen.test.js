@@ -1,6 +1,6 @@
 import React from 'react';
 import LoginScreen from '../login.screen';
-import {fireEvent, waitFor} from '@testing-library/react-native'
+import {fireEvent, render, waitFor} from '@testing-library/react-native'
 import {loginForm} from '../login.form';
 import {Provider} from 'react-redux';
 import {store} from '../../../store/store';
@@ -172,7 +172,7 @@ describe('Login Screen', () => {
             expect(store.getState().login.isRecoveredPassword).toBeFalsy();
             expect(store.getState().loading.show).toBeFalsy();
             expect(store.getState().login.error).not.toBeNull();
-            screen.getByTestId('recoverPasswordFail');
+            screen.getByTestId('errorMessage');
         })
     })
 
@@ -183,10 +183,62 @@ describe('Login Screen', () => {
         store.dispatch(recoverPasswordFail({error: 'message'}));
         store.dispatch(recoverPasswordReset());
 
-        expect(screen.queryAllByTestId('recoverPasswordFail').length).toEqual(0);
+        expect(screen.queryAllByTestId('errorMessage').length).toEqual(0);
+    })
+
+    it('should show loading and start login when user tries to login', async () => {
+        const screen = renderLoginScreen();
+        const email = screen.getByTestId('email');
+        fireEvent.changeText(email, 'valid@email.com');
+        const password = screen.getByTestId('password');
+        fireEvent.changeText(password, 'anyPassword');
+        const loginButton = screen.getByTestId('loginButton');
+        fireEvent.press(loginButton)
+        await waitFor(() => {
+            expect(store.getState().login.isLoggingIn).toBeTruthy();
+            expect(store.getState().loading.show).toBeTruthy()
+        });
+    })
+
+    it('should hide loading and redirect to home screen when login is successful', async () => {
+        const navigation = {
+            navigate: () => {
+            }
+        }
+        spyOn(navigation, 'navigate');
+
+        const screen = renderLoginScreen(navigation);
+        const email = screen.getByTestId('email');
+        fireEvent.changeText(email, 'valid@email.com');
+        const password = screen.getByTestId('password');
+        fireEvent.changeText(password, 'anyPassword');
+        const loginButton = screen.getByTestId('loginButton');
+        fireEvent.press(loginButton)
+        await waitFor(() => {
+            expect(store.getState().login.isLoggedIn).toBeTruthy();
+            expect(store.getState().loading.show).toBeFalsy();
+            expect(navigation.navigate).toHaveBeenCalledWith('Home')
+        });
+    })
+
+    it('should hide loading and show error message when login fails', async () => {
+        const screen = renderLoginScreen();
+        const email = screen.getByTestId('email');
+        fireEvent.changeText(email, 'error@email.com');
+        const password = screen.getByTestId('password');
+        fireEvent.changeText(password, 'anyPassword');
+        const loginButton = screen.getByTestId('loginButton');
+        fireEvent.press(loginButton)
+
+        await waitFor(() => {
+            expect(store.getState().login.isLoggingIn).toBeFalsy();
+            expect(store.getState().loading.show).toBeFalsy();
+            screen.getByTestId('errorMessage');
+        })
     })
 
     function renderLoginScreen(navigation) {
-        return <Provider store={store}><LoginScreen navigation={navigation}/></Provider>
+        return render(<Provider store={store}><LoginScreen
+            navigation={navigation}/></Provider>);
     }
 })
